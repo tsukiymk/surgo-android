@@ -1,0 +1,17 @@
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (SDK path, etc)
+local.properties
+
+# IntelliJ-based IDEs
+.idea/
+*.iml
+
+# External native build folder generated in Android Studio 2.2 and later
+.externalNativeBuild/
+.cxx/
+
+# Keystore files
+*.jks

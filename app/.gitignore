@@ -1,0 +1,6 @@
+# Gradle files
+build/
+
+# Generated files
+debug/
+release/
