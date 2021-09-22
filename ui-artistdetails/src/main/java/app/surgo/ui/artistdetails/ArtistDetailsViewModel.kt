@@ -9,6 +9,7 @@ import app.surgo.domain.collectWithStatus
 import app.surgo.domain.interactors.UpdateArtistCatalog
 import app.surgo.domain.observers.ObserveArtist
 import app.surgo.domain.observers.ObserveArtistAlbums
+import app.surgo.domain.observers.ObserveArtistVideos
 import app.surgo.domain.observers.ObservePopularSongs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -21,7 +22,8 @@ internal class ArtistDetailsViewModel @Inject constructor(
     private val updateArtistCatalog: UpdateArtistCatalog,
     private val observeArtist: ObserveArtist,
     private val observePopularSongs: ObservePopularSongs,
-    private val observeArtistAlbums: ObserveArtistAlbums
+    private val observeArtistAlbums: ObserveArtistAlbums,
+    private val observeArtistVideos: ObserveArtistVideos
 ) : ViewModel() {
     private val _state = MutableStateFlow(ArtistDetailsViewState())
     val state: StateFlow<ArtistDetailsViewState>
@@ -40,13 +42,15 @@ internal class ArtistDetailsViewModel @Inject constructor(
                 loadingState.observe,
                 observeArtist.observe(),
                 observePopularSongs.observe(),
-                observeArtistAlbums.observe()
-            ) { isRefreshing, artist, popularSongs, albums ->
+                observeArtistAlbums.observe(),
+                observeArtistVideos.observe()
+            ) { isRefreshing, artist, popularSongs, albums, videos ->
                 ArtistDetailsViewState(
                     isRefreshing = isRefreshing,
                     artist = artist,
                     songs = popularSongs.map { it.songWithArtists.song },
-                    albums = albums
+                    albums = albums,
+                    videos = videos
                 )
             }.collect { _state.value = it }
         }
@@ -54,6 +58,7 @@ internal class ArtistDetailsViewModel @Inject constructor(
         observeArtist(ObserveArtist.Parameters(artistId))
         observePopularSongs(ObservePopularSongs.Parameters(artistId))
         observeArtistAlbums(ObserveArtistAlbums.Parameters(artistId))
+        observeArtistVideos(ObserveArtistVideos.Parameters(artistId))
 
         refresh(false)
     }

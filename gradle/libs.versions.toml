@@ -1,10 +1,10 @@
 [versions]
 accompanist = "0.18.0"
-androidx-compose = "1.1.0-alpha03"
+androidx-compose = "1.1.0-alpha04"
 androidx-datastore = "1.0.0"
 androidx-hilt = "1.0.0-alpha03"
 androidx-lifecycle = "2.3.1"
-androidx-media2 = "1.2.0-rc01"
+androidx-media2 = "1.2.0"
 androidx-paging = "3.0.1"
 androidx-room = "2.3.0"
 dagger = "2.38.1"
@@ -51,7 +51,7 @@ androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-kt
 androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-media2-session = { module = "androidx.media2:media2-session", version.ref = "androidx-media2" }
 androidx-media2-player = { module = "androidx.media2:media2-player", version.ref = "androidx-media2" }
-androidx-navigation-compose = "androidx.navigation:navigation-compose:2.4.0-alpha08"
+androidx-navigation-compose = "androidx.navigation:navigation-compose:2.4.0-alpha09"
 androidx-paging-common = { module = "androidx.paging:paging-common-ktx", version.ref = "androidx-paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-common-ktx", version.ref = "androidx-paging" }
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime-ktx", version.ref = "androidx-paging" }
@@ -70,7 +70,7 @@ dagger-hiltAndroid = { module = "com.google.dagger:hilt-android", version.ref = 
 dagger-hiltAndroidCompiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "dagger" }
 dagger-hiltAndroidGradle = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "dagger" }
 
-jetbrains-dokka-gradle = "org.jetbrains.dokka:dokka-gradle-plugin:1.5.0"
+jetbrains-dokka-gradle = "org.jetbrains.dokka:dokka-gradle-plugin:1.5.30"
 
 junit-jUnit = "junit:junit:4.13.2"
 

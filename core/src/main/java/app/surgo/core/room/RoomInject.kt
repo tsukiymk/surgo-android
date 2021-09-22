@@ -70,6 +70,16 @@ object DatabaseDaoModule {
     ): AlbumArtistsDao = database.albumArtistsDao()
 
     @Provides
+    fun provideVideosDao(
+        database: AppDatabase
+    ): VideosDao = database.videosDao()
+
+    @Provides
+    fun provideVideoArtistsDao(
+        database: AppDatabase
+    ): VideoArtistsDao = database.videoArtistsDao()
+
+    @Provides
     fun providePlaylistsDao(
         database: AppDatabase
     ): PlaylistsDao = database.playlistsDao()

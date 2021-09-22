@@ -33,7 +33,9 @@ dependencies {
 
     // Jetpack
     implementation(libs.androidx.compose.material.material)
+    implementation(libs.androidx.compose.runtime.runtime)
     implementation(libs.androidx.compose.ui.ui)
+    implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.util)
     implementation(libs.androidx.core.core)
     implementation(libs.androidx.palette.palette)

@@ -17,13 +17,13 @@ interface DatabaseDaos {
 
     fun albumArtistsDao(): AlbumArtistsDao
 
-    fun playlistsDao(): PlaylistsDao
-
-    fun playlistSongsDao(): PlaylistSongsDao
-
     fun videosDao(): VideosDao
 
     fun videoArtistsDao(): VideoArtistsDao
+
+    fun playlistsDao(): PlaylistsDao
+
+    fun playlistSongsDao(): PlaylistSongsDao
 
     fun recommendedDao(): RecommendedPlaylistsDao
 

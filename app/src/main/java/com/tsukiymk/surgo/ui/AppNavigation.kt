@@ -7,7 +7,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import app.surgo.common.compose.NavArguments
 import app.surgo.ui.albumdetails.AlbumDetailsScreen

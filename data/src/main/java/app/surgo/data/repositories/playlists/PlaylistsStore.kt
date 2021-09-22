@@ -3,10 +3,7 @@ package app.surgo.data.repositories.playlists
 import app.surgo.data.DatabaseTransactionRunner
 import app.surgo.data.daos.*
 import app.surgo.data.entities.*
-import app.surgo.data.mappers.DataSourceToAlbumEntity
-import app.surgo.data.mappers.DataSourceToArtistEntity
-import app.surgo.data.mappers.DataSourceToPlaylistEntity
-import app.surgo.data.mappers.DataSourceToSongEntity
+import app.surgo.data.mappers.*
 import app.surgo.data.repositories.lastrequests.LastRequestsStore
 import app.surgo.shared.plugin.DataSourceManager
 import com.dropbox.android.external.store4.Fetcher
@@ -18,6 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.map
 import java.time.Duration
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -74,8 +72,9 @@ class PlaylistsStore @Inject constructor(
 
     suspend fun fetchPlaylistSongs(): Store<Long, List<PlaylistSongEntry>> = StoreBuilder.from(
         fetcher = Fetcher.of { playlistId ->
-            playlistsDataSource.getPlaylist(
-                playlistsDao.getPlaylistByIdOrThrow(playlistId).originId
+            playlistsDataSource.catalog(
+                playlistsDao.getPlaylistByIdOrThrow(playlistId).originId,
+                storefront = Locale.getDefault().language,
             ).also {
                 if (it.isSuccess) {
                     lastRequestsStore.updateLastRequest(Request.PLAYLIST_SONGS, playlistId)
@@ -93,24 +92,19 @@ class PlaylistsStore @Inject constructor(
                         }
                     }
             },
-            writer = { playlistId, response ->
+            writer = { playlistId, catalog ->
                 transactionRunner {
-                    response.tracks
-                        ?.map { track ->
-                            // TODO: It has a better way to insert.
-                            val album = track.album ?: return@transactionRunner
-                            val albumId = albumsDao.insertOrUpdate(
-                                DataSourceToAlbumEntity(album, source)
-                            )
+                    catalog.relationships?.tracks?.data
+                        ?.map { trackCatalog ->
+                            // Do not fill album info
                             val songId = songsDao.insertOrUpdate(
-                                DataSourceToSongEntity(track, albumId, source)
+                                CatalogToSongEntity(trackCatalog, source)
                             )
 
-                            // TODO: It has a better way to insert.
-                            track.artists.orEmpty()
-                                .map { artist ->
+                            trackCatalog.relationships?.artists?.data.orEmpty()
+                                .map { artistCatalog ->
                                     val artistId = artistsDao.insertOrUpdate(
-                                        DataSourceToArtistEntity(artist, source)
+                                        CatalogToArtistEntity(artistCatalog, source)
                                     )
 
                                     SongArtistEntry(

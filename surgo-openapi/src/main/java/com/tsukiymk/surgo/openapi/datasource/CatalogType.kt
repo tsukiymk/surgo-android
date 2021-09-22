@@ -14,5 +14,6 @@ enum class ViewType {
     FULL_ALBUMS,
     LATEST_RELEASE,
     SINGLES,
-    POPULAR_SONGS
+    TOP_MUSIC_VIDEOS,
+    TOP_SONGS
 }

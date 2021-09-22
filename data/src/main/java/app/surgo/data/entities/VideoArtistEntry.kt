@@ -24,6 +24,6 @@ import androidx.room.*
 )
 data class VideoArtistEntry(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") override val id: Long = 0,
-    @ColumnInfo(name = "video_id") val albumId: Long,
+    @ColumnInfo(name = "video_id") val videoId: Long,
     @ColumnInfo(name = "artist_id") override val artistId: Long
 ) : ArtistEntry

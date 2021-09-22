@@ -1,10 +1,17 @@
 package app.surgo.data.repositories.playlists
 
+import com.tsukiymk.surgo.openapi.datasource.Catalog
 import com.tsukiymk.surgo.openapi.datasource.PlaylistsDataSource
+import com.tsukiymk.surgo.openapi.datasource.ViewType
 import com.tsukiymk.surgo.openapi.datasource.entities.Playlist
 
 class LocalPlaylistsDataSource : PlaylistsDataSource {
-    override suspend fun getPlaylist(originId: Long): Result<Playlist> {
+    override suspend fun catalog(
+        playlistId: Long,
+        storefront: String,
+        local: String?,
+        views: Array<ViewType>?
+    ): Result<Catalog> {
         return Result.failure(NotImplementedError())
     }
 

@@ -33,6 +33,7 @@ import app.surgo.common.compose.runtime.LocalContentPadding
 import app.surgo.common.compose.utils.iconButtonBackgroundScrim
 import app.surgo.data.entities.AlbumEntity
 import app.surgo.data.entities.SongEntity
+import app.surgo.data.entities.VideoEntity
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
@@ -125,7 +126,7 @@ private fun ArtistDetailsScreen(
                 Text(stringResource(R.string.text_music_videos))
             }
             item {
-                MusicVideosColumn(viewState.albums)
+                MusicVideosColumn(viewState.videos)
             }
         }
     }
@@ -380,7 +381,7 @@ private fun AlbumRow(
 
 @Composable
 private fun MusicVideosColumn(
-    albums: List<AlbumEntity>,
+    albums: List<VideoEntity>,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -394,9 +395,9 @@ private fun MusicVideosColumn(
     ) {
         val lastIndex = albums.size - 1
 
-        itemsIndexed(albums) { index, album ->
+        itemsIndexed(albums) { index, video ->
             MusicVideosRow(
-                album = album,
+                video = video,
                 modifier = Modifier
                     .width(360.dp)
                     .clickable { /* */ }
@@ -409,7 +410,7 @@ private fun MusicVideosColumn(
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun MusicVideosRow(
-    album: AlbumEntity,
+    video: VideoEntity,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -418,9 +419,9 @@ private fun MusicVideosRow(
                 .fillMaxWidth()
                 .aspectRatio(16f / 10)
         ) {
-            if (album.imageUri != null) {
+            if (video.imageUri != null) {
                 Image(
-                    painter = rememberImagePainter(album.imageUri),
+                    painter = rememberImagePainter(video.imageUri),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
@@ -430,7 +431,7 @@ private fun MusicVideosRow(
             }
         }
         Text(
-            text = album.name,
+            text = video.name,
             modifier = Modifier.fillMaxWidth(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

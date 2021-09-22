@@ -6,6 +6,8 @@ plugins {
     id("maven-publish")
 }
 
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
