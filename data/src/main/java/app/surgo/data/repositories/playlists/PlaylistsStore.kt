@@ -2,8 +2,11 @@ package app.surgo.data.repositories.playlists
 
 import app.surgo.data.DatabaseTransactionRunner
 import app.surgo.data.daos.*
-import app.surgo.data.entities.*
-import app.surgo.data.mappers.*
+import app.surgo.data.entities.PlaylistSongEntry
+import app.surgo.data.entities.Request
+import app.surgo.data.entities.SongArtistEntry
+import app.surgo.data.mappers.CatalogToArtistEntity
+import app.surgo.data.mappers.CatalogToSongEntity
 import app.surgo.data.repositories.lastrequests.LastRequestsStore
 import app.surgo.shared.plugin.DataSourceManager
 import com.dropbox.android.external.store4.Fetcher
@@ -27,12 +30,9 @@ class PlaylistsStore @Inject constructor(
     private val lastRequestsStore: LastRequestsStore,
     private val playlistsDao: PlaylistsDao,
     private val playlistSongsDao: PlaylistSongsDao,
-    private val albumsDao: AlbumsDao,
     private val artistsDao: ArtistsDao,
     private val songsDao: SongsDao,
-    private val songArtistsDao: SongArtistsDao,
-    private val recommendedPlaylistsDao: RecommendedPlaylistsDao,
-    private val popularPlaylistsDao: PopularPlaylistsDao
+    private val songArtistsDao: SongArtistsDao
 ) {
     private val source: Long
         get() = sourceManager.key
@@ -40,37 +40,7 @@ class PlaylistsStore @Inject constructor(
     private val playlistsDataSource: PlaylistsDataSource
         get() = sourceManager.factory.playlistsDataSource()
 
-    suspend fun fetchRecommended(pageSize: Int) {
-        val playlists = playlistsDataSource.getRecommendedPlaylists(pageSize)
-            .getOrNull() ?: emptyList()
-        val entries = playlists.map { playlist ->
-            val playlistId = playlistsDao.insertOrUpdate(
-                DataSourceToPlaylistEntity(playlist, source)
-            )
-
-            RecommendedPlaylistEntry(playlistId = playlistId)
-        }
-
-        recommendedPlaylistsDao.deleteAll()
-        recommendedPlaylistsDao.insertAll(entries)
-    }
-
-    suspend fun fetchPopular(pageSize: Int) {
-        val playlists = playlistsDataSource.getPopularPlaylists(pageSize)
-            .getOrNull() ?: emptyList()
-        val entries = playlists.map { playlist ->
-            val playlistId = playlistsDao.insertOrUpdate(
-                DataSourceToPlaylistEntity(playlist, source)
-            )
-
-            PopularPlaylistEntry(playlistId = playlistId)
-        }
-
-        popularPlaylistsDao.deleteAll()
-        popularPlaylistsDao.insertAll(entries)
-    }
-
-    suspend fun fetchPlaylistSongs(): Store<Long, List<PlaylistSongEntry>> = StoreBuilder.from(
+    suspend fun catalog(): Store<Long, List<PlaylistSongEntry>> = StoreBuilder.from(
         fetcher = Fetcher.of { playlistId ->
             playlistsDataSource.catalog(
                 playlistsDao.getPlaylistByIdOrThrow(playlistId).originId,

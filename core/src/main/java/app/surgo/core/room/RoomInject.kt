@@ -90,17 +90,7 @@ object DatabaseDaoModule {
     ): PlaylistSongsDao = database.playlistSongsDao()
 
     @Provides
-    fun provideRecommendedDao(
-        database: AppDatabase
-    ): RecommendedPlaylistsDao = database.recommendedDao()
-
-    @Provides
     fun providePopularSongsDao(
         database: AppDatabase
     ): PopularSongsDao = database.popularSongsDao()
-
-    @Provides
-    fun providePopularPlaylistsDao(
-        database: AppDatabase
-    ): PopularPlaylistsDao = database.popularPlaylistsDao()
 }

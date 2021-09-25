@@ -16,10 +16,4 @@ class SongsStore @Inject constructor(
 
     private val songsDataSource: SongsDataSource
         get() = sourceManager.factory.songsDataSource()
-
-    suspend fun getSongs(songIds: Array<Long>): List<SongEntity> {
-        return songsDataSource.getSongs(songIds)
-            .getOrNull()
-            ?.map { DataSourceToSongEntity(it, source) } ?: emptyList()
-    }
 }

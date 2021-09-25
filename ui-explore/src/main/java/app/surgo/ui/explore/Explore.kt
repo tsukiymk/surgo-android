@@ -40,11 +40,11 @@ import app.surgo.common.compose.components.Chip
 import app.surgo.common.compose.components.SearchTextField
 import app.surgo.common.compose.components.rememberDominantColorState
 import app.surgo.common.compose.utils.horizontalGradientBackground
-import app.surgo.data.entities.CategoryEntity
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
+import com.tsukiymk.surgo.openapi.datasource.entities.Resource
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -225,29 +225,35 @@ private fun ExploreTopAppBar(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CategoriesContent(
-    categories: List<CategoryEntity>
+    categories: Resource
 ) {
     LazyVerticalGrid(
         cells = GridCells.Fixed(count = 2),
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
-        items(categories) { category ->
-            CategoryContent(
-                category = category,
-                modifier = Modifier.padding(8.dp)
-            )
-        }
+        categories.data.orEmpty()
+            .forEach { resource ->
+                val contents = resource.relationships?.contents?.data
+
+                items(contents.orEmpty()) { content ->
+                    CategoryGrid(
+                        name = content.attributes?.name ?: "",
+                        imageUrl = content.attributes?.artwork?.url,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
     }
 }
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-private fun CategoryContent(
-    category: CategoryEntity,
+private fun CategoryGrid(
+    name: String,
+    imageUrl: String?,
     modifier: Modifier = Modifier
 ) {
     val colorState = rememberDominantColorState()
-    val imageUrl = category.imageUri
     if (imageUrl != null) {
         LaunchedEffect(imageUrl) {
             colorState.updateColorsFromImageUrl(imageUrl)
@@ -268,7 +274,7 @@ private fun CategoryContent(
     ) {
         Text(
             modifier = Modifier.padding(8.dp),
-            text = category.name,
+            text = name,
             style = MaterialTheme.typography.h6.copy(fontSize = 16.sp),
             color = colorState.onColor
         )
@@ -277,7 +283,7 @@ private fun CategoryContent(
                 .size(70.dp)
                 .align(Alignment.Bottom)
                 .graphicsLayer(translationX = 40f, rotationZ = 32f, shadowElevation = 16f),
-            painter = rememberImagePainter(category.imageUri),
+            painter = rememberImagePainter(imageUrl),
             contentDescription = null,
             contentScale = ContentScale.Crop
         )

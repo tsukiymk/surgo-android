@@ -18,7 +18,7 @@ interface DataSourceFactory {
     // Search
     fun searchDataSource(): SearchDataSource
 
-    // Recommendations
+    // Recommendations and Categories
     fun recommendationsDataSource(): RecommendationsDataSource
 
     fun categoriesDataSource(): CategoriesDataSource

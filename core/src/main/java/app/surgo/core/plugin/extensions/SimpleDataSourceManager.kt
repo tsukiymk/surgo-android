@@ -23,6 +23,8 @@ class SimpleDataSourceManager(
     private val coroutineJob = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + coroutineJob)
 
+    private val factoryMap = HashMap<Long, DataSourceFactory>()
+
     init {
         coroutineScope.launch {
             combine(
@@ -75,6 +77,7 @@ class SimpleDataSourceManager(
                         bytes[it].toLong() and 0xff shl 8 * (7 - it)
                     }.reduce(Long::or) and Long.MAX_VALUE
                     factory = instance
+                    factoryMap[key] = instance
                 }
                 else -> throw Exception("Unknown source class type! ${instance.javaClass}")
             }
@@ -87,4 +90,7 @@ class SimpleDataSourceManager(
 
     override var factory: DataSourceFactory = InternalDataSourceFactory()
         private set
+
+    override val map: Map<Long, DataSourceFactory>
+        get() = factoryMap
 }

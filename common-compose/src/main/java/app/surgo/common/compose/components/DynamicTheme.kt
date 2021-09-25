@@ -134,7 +134,6 @@ private suspend fun calculateSwatchesInImage(
         withContext(Dispatchers.Default) {
             val palette = Palette.Builder(bitmap)
                 .resizeBitmapArea(0)
-                .clearFilters()
                 .maximumColorCount(16)
                 .generate()
 

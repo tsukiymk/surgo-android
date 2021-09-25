@@ -1,6 +1,7 @@
 package app.surgo.data.daos
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Query
 import app.surgo.data.entities.VideoEntity
 import kotlinx.coroutines.flow.Flow
 

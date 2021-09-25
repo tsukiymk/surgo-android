@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import app.surgo.common.compose.components.InsetAwareTopAppBar
 import app.surgo.common.compose.utils.lerp
 import app.surgo.core.media2.displayIconUri
 import app.surgo.core.media2.displaySubtitle
@@ -42,6 +41,8 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import coil.transform.BlurTransformation
 import coil.transform.CircleCropTransformation
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -175,9 +176,15 @@ private fun PlaybackContent(
     emit: (PlaybackAction) -> Unit
 ) {
     Column(modifier) {
-        InsetAwareTopAppBar(
+        TopAppBar(
             backgroundColor = Color.Transparent,
-            elevation = 0.dp
+            elevation = 0.dp,
+            contentPadding = rememberInsetsPaddingValues(
+                insets = LocalWindowInsets.current.systemBars,
+                applyStart = false,
+                applyEnd = false,
+                applyBottom = false
+            )
         ) {
             IconButton(onClick = { emit(PlaybackAction.Close) }) {
                 Icon(

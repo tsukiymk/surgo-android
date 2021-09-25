@@ -14,7 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import app.surgo.common.compose.components.InsetAwareTopAppBar
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.google.accompanist.insets.ui.TopAppBar
 
 @Composable
 fun LibraryScreen() {
@@ -40,10 +42,16 @@ private fun LibraryContent(
 
 @Composable
 private fun LibraryTopBar() {
-    InsetAwareTopAppBar(
+    TopAppBar(
         title = {
             Row { Text(stringResource(R.string.text_your_library)) }
         },
+        contentPadding = rememberInsetsPaddingValues(
+            insets = LocalWindowInsets.current.systemBars,
+            applyStart = false,
+            applyEnd = false,
+            applyBottom = false
+        ),
         actions = {
             IconButton(onClick = { /* TODO */ }) {
                 Icon(

@@ -56,6 +56,7 @@ dependencies {
 
     // Accompanist
     implementation(libs.accompanist.insets)
+    implementation(libs.accompanist.insetsUi)
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pagerIndicators)
     implementation(libs.accompanist.swipeRefresh)

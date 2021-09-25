@@ -11,9 +11,8 @@ import app.surgo.data.mappers.CatalogToSongEntity
 import app.surgo.data.mappers.CatalogToVideoEntity
 import app.surgo.shared.plugin.DataSourceManager
 import com.tsukiymk.surgo.openapi.datasource.ArtistsDataSource
-import com.tsukiymk.surgo.openapi.datasource.CatalogType
-import com.tsukiymk.surgo.openapi.datasource.ViewType
-import java.util.*
+import com.tsukiymk.surgo.openapi.datasource.enumerations.Type
+import com.tsukiymk.surgo.openapi.datasource.enumerations.View
 import javax.inject.Inject
 
 class ArtistsStore @Inject constructor(
@@ -34,81 +33,82 @@ class ArtistsStore @Inject constructor(
         get() = sourceManager.factory.artistsDataSource()
 
     // TODO: Complex block
-    suspend fun fetchCatalog(
+    suspend fun catalog(
         artistId: Long
     ) {
-        val catalog = artistsDataSource.catalog(
+        val response = artistsDataSource.catalog(
             artistId = artistsDao.getArtistByIdOrThrow(artistId).originId,
-            storefront = Locale.getDefault().language,
-            views = arrayOf(ViewType.TOP_SONGS, ViewType.FULL_ALBUMS, ViewType.TOP_MUSIC_VIDEOS)
+            views = arrayOf(View.TOP_SONGS, View.FULL_ALBUMS, View.TOP_MUSIC_VIDEOS)
         ).getOrNull() ?: return
 
-        when (catalog.type) {
-            CatalogType.ARTISTS -> {
-                // Update DB entity
-                artistsDao.insertOrUpdate(
-                    CatalogToArtistEntity(catalog, source)
-                )
+        response.data?.forEach { resource ->
+            when (resource.type) {
+                Type.ARTISTS -> {
+                    // Update DB entity
+                    artistsDao.insertOrUpdate(
+                        CatalogToArtistEntity(resource, source)
+                    )
 
-                catalog.views?.forEach { (t, view) ->
-                    when (t) {
-                        // Popular songs
-                        ViewType.TOP_SONGS -> {
-                            // Store songs
-                            transactionRunner {
-                                view.data?.map { songCatalog ->
-                                    val songId = songsDao.insertOrUpdate(
-                                        CatalogToSongEntity(songCatalog, source)
-                                    )
-                                    PopularSongEntry(
-                                        artistId = artistId,
-                                        songId = songId
-                                    )
-                                }?.let {
-                                    popularSongsDao.deleteByArtistId(artistId)
-                                    popularSongsDao.insertOrUpdate(it)
+                    resource.views?.forEach { (t, view) ->
+                        when (t) {
+                            // Popular songs
+                            View.TOP_SONGS -> {
+                                // Store songs
+                                transactionRunner {
+                                    view.data?.map { songCatalog ->
+                                        val songId = songsDao.insertOrUpdate(
+                                            CatalogToSongEntity(songCatalog, source)
+                                        )
+                                        PopularSongEntry(
+                                            artistId = artistId,
+                                            songId = songId
+                                        )
+                                    }?.let {
+                                        popularSongsDao.deleteByArtistId(artistId)
+                                        popularSongsDao.insertOrUpdate(it)
+                                    }
                                 }
                             }
-                        }
-                        ViewType.FULL_ALBUMS -> {
-                            // Store albums
-                            transactionRunner {
-                                view.data?.map { albumCatalog ->
-                                    val albumId = albumsDao.insertOrUpdate(
-                                        CatalogToAlbumEntity(albumCatalog, source)
-                                    )
-                                    AlbumArtistEntry(
-                                        albumId = albumId,
-                                        artistId = artistId
-                                    )
-                                }?.let {
-                                    albumArtistsDao.deleteByArtistId(artistId)
-                                    albumArtistsDao.insertOrUpdate(it)
+                            View.FULL_ALBUMS -> {
+                                // Store albums
+                                transactionRunner {
+                                    view.data?.map { albumCatalog ->
+                                        val albumId = albumsDao.insertOrUpdate(
+                                            CatalogToAlbumEntity(albumCatalog, source)
+                                        )
+                                        AlbumArtistEntry(
+                                            albumId = albumId,
+                                            artistId = artistId
+                                        )
+                                    }?.let {
+                                        albumArtistsDao.deleteByArtistId(artistId)
+                                        albumArtistsDao.insertOrUpdate(it)
+                                    }
                                 }
                             }
-                        }
-                        ViewType.TOP_MUSIC_VIDEOS -> {
-                            // Store music videos
-                            transactionRunner {
-                                view.data?.map { videoCatalog ->
-                                    val videoId = videosDao.insertOrUpdate(
-                                        CatalogToVideoEntity(videoCatalog, source)
-                                    )
-                                    VideoArtistEntry(
-                                        videoId = videoId,
-                                        artistId = artistId
-                                    )
-                                }?.let {
-                                    videoArtistsDao.deleteByArtistId(artistId)
-                                    videoArtistsDao.insertOrUpdate(it)
+                            View.TOP_MUSIC_VIDEOS -> {
+                                // Store music videos
+                                transactionRunner {
+                                    view.data?.map { videoCatalog ->
+                                        val videoId = videosDao.insertOrUpdate(
+                                            CatalogToVideoEntity(videoCatalog, source)
+                                        )
+                                        VideoArtistEntry(
+                                            videoId = videoId,
+                                            artistId = artistId
+                                        )
+                                    }?.let {
+                                        videoArtistsDao.deleteByArtistId(artistId)
+                                        videoArtistsDao.insertOrUpdate(it)
+                                    }
                                 }
                             }
+                            else -> {}
                         }
-                        else -> {}
                     }
                 }
+                else -> return
             }
-            else -> return
         }
     }
 

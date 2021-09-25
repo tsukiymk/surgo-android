@@ -1,40 +1,40 @@
 package app.surgo.ui.feed
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
-import app.surgo.common.compose.components.DynamicThemePrimaryColorsFromImage
-import app.surgo.common.compose.components.InsetAwareTopAppBar
+import app.surgo.common.compose.components.label
 import app.surgo.common.compose.components.rememberDominantColorState
 import app.surgo.common.compose.runtime.LocalContentPadding
+import app.surgo.common.compose.theme.AppTheme
 import app.surgo.common.compose.theme.Keyline1
-import app.surgo.common.compose.utils.contrastAgainst
-import app.surgo.common.compose.utils.verticalGradientScrim
-import app.surgo.data.entities.PlaylistEntity
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.tsukiymk.surgo.openapi.datasource.entities.Resource
+import com.tsukiymk.surgo.openapi.datasource.enumerations.Kind
+import kotlinx.coroutines.launch
 
 @Composable
 fun FeedScreen(
@@ -59,64 +59,14 @@ private fun FeedContent(
     viewState: FeedViewState,
     emit: (FeedAction) -> Unit
 ) {
-    val surfaceColor = MaterialTheme.colors.surface
-    val colorState = rememberDominantColorState { color ->
-        color.contrastAgainst(surfaceColor) >= MinContrastOfPrimaryVsSurface
-    }
-
-    DynamicThemePrimaryColorsFromImage(colorState) {
-        LazyColumn(contentPadding = LocalContentPadding.current) {
-            item {
-                val selectedImageUrl = viewState.recentlyPlaylists.getOrNull(0)?.imageUri
-                if (selectedImageUrl != null) {
-                    LaunchedEffect(selectedImageUrl) {
-                        colorState.updateColorsFromImageUrl(selectedImageUrl)
-                    }
-                } else {
-                    colorState.reset()
-                }
-
-                Column(
-                    Modifier.verticalGradientScrim(
-                        color = MaterialTheme.colors.primary.copy(alpha = 0.38f),
-                        startYPercentage = 1f,
-                        endYPercentage = 0f
-                    )
-                ) {
-                    FeedTopAppBar(
-                        backgroundColor = Color.Transparent,
-                        emit = emit
-                    )
-                    PlaylistsColumn(
-                        label = stringResource(R.string.text_recently_played),
-                        collections = viewState.recentlyPlaylists,
-                        size = 128.dp,
-                        onItemClicked = { emit(FeedAction.OpenPlaylistDetails(it)) }
-                    )
-                }
-            }
-            item {
-                PlaylistsColumn(
-                    label = stringResource(R.string.text_recommended_playlists),
-                    collections = viewState.recommendedPlaylists,
-                    onItemClicked = { emit(FeedAction.OpenPlaylistDetails(it)) }
-                )
-            }
-            item {
-                PlaylistsColumn(
-                    label = stringResource(R.string.text_for_you),
-                    collections = viewState.recommendedPlaylists,
-                    onItemClicked = { emit(FeedAction.OpenPlaylistDetails(it)) }
-                )
-            }
-            item {
-                PlaylistsColumn(
-                    label = stringResource(R.string.text_charts),
-                    collections = viewState.popularPlaylists,
-                    onItemClicked = { emit(FeedAction.OpenPlaylistDetails(it)) }
-                )
-            }
+    LazyColumn(contentPadding = LocalContentPadding.current) {
+        item {
+            FeedTopAppBar(
+                backgroundColor = Color.Transparent,
+                emit = emit
+            )
         }
+        lazyItemOfCatalog(viewState.recommendations)
     }
 }
 
@@ -125,9 +75,15 @@ private fun FeedTopAppBar(
     backgroundColor: Color,
     emit: (FeedAction) -> Unit
 ) {
-    InsetAwareTopAppBar(
+    TopAppBar(
         backgroundColor = backgroundColor,
-        elevation = 0.dp
+        elevation = 0.dp,
+        contentPadding = rememberInsetsPaddingValues(
+            insets = LocalWindowInsets.current.systemBars,
+            applyStart = false,
+            applyEnd = false,
+            applyBottom = false
+        )
     ) {
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Spacer(Modifier.weight(1f))
@@ -147,52 +103,46 @@ private fun FeedTopAppBar(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-private fun PlaylistsColumn(
-    label: String,
-    collections: List<PlaylistEntity>,
-    modifier: Modifier = Modifier,
-    size: Dp = 160.dp,
-    onItemClicked: (Long) -> Unit
+private fun LazyListScope.lazyItemOfCatalog(
+    recommendations: Resource
 ) {
-    AnimatedVisibility(
-        visible = collections.isNotEmpty(),
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        Column(modifier) {
-            Row(Modifier.padding(start = 24.dp)) {
-                Text(
-                    text = label,
-                    modifier = Modifier
-                        .weight(1f)
-                        .wrapContentWidth(Alignment.Start),
-                    style = MaterialTheme.typography.h5,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+    recommendations.data.orEmpty()
+        .forEach { resource ->
+            when (resource.attributes?.display?.kind) {
+                Kind.HERO_SHELF -> lazyItemOfHeroShelf(resource)
+                Kind.COVER_SHELF -> lazyItemOfCoverShelf(resource)
             }
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(24.dp),
-                contentPadding = PaddingValues(
-                    start = Keyline1,
-                    top = 8.dp,
-                    end = Keyline1,
-                    bottom = 24.dp
+        }
+}
+
+private fun LazyListScope.lazyItemOfHeroShelf(
+    resource: Resource
+) {
+    val label = resource.attributes?.title?.stringForDisplay ?: ""
+    val contents = resource.relationships?.contents?.data
+
+    label {
+        Text(label)
+    }
+    item {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(24.dp),
+            contentPadding = PaddingValues(
+                start = Keyline1,
+                top = 8.dp,
+                end = Keyline1,
+                bottom = 24.dp
+            )
+        ) {
+            items(contents.orEmpty()) { content ->
+                HeroShelfRow(
+                    title = content.attributes?.name ?: "",
+                    imageUrl = content.attributes?.artwork?.url,
+                    modifier = Modifier
+                        .width(200.dp)
+                        .clickable { /* TODO */ },
+                    shape = RoundedCornerShape(16.dp)
                 )
-            ) {
-                items(collections) { playlist ->
-                    PlaylistColumn(
-                        title = playlist.name,
-                        imageUrl = playlist.imageUri,
-                        modifier = Modifier
-                            .width(size)
-                            .clickable(
-                                onClick = { onItemClicked(playlist.id) }
-                            )
-                    )
-                }
             }
         }
     }
@@ -200,39 +150,160 @@ private fun PlaylistsColumn(
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-private fun PlaylistColumn(
+private fun HeroShelfRow(
     title: String,
     imageUrl: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    shape: Shape = MaterialTheme.shapes.medium
 ) {
-    Column(modifier) {
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .align(Alignment.CenterHorizontally)
-        ) {
-            if (imageUrl != null) {
-                val painter = rememberImagePainter(imageUrl)
+    val scope = rememberCoroutineScope()
 
-                Image(
-                    painter = painter,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(MaterialTheme.shapes.medium),
-                    contentScale = ContentScale.Crop
+    val dominantColor = rememberDominantColorState()
+    LaunchedEffect(imageUrl) {
+        scope.launch {
+            if (imageUrl != null) {
+                dominantColor.updateColorsFromImageUrl(imageUrl)
+            }
+        }
+    }
+
+    Surface(
+        modifier = modifier,
+        shape = shape,
+        color = dominantColor.color
+    ) {
+        ConstraintLayout(
+            Modifier.aspectRatio(3/4f)
+        ) {
+            val (image, text) = createRefs()
+
+            Image(
+                painter = rememberImagePainter(imageUrl),
+                contentDescription = null,
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .constrainAs(image) {
+                        centerHorizontallyTo(parent)
+                        top.linkTo(parent.top)
+                    },
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier.constrainAs(text) {
+                    centerHorizontallyTo(parent)
+                    top.linkTo(image.bottom)
+                    bottom.linkTo(parent.bottom)
+                },
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = title,
+                    color = dominantColor.onColor,
+                    style = MaterialTheme.typography.body2,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
-        Text(
-            text = title,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            style = MaterialTheme.typography.body2,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+    }
+}
+
+private fun LazyListScope.lazyItemOfCoverShelf(
+    resource: Resource
+) {
+    val label = resource.attributes?.title?.stringForDisplay ?: ""
+    val contents = resource.relationships?.contents?.data.orEmpty()
+
+    label {
+        Text(label)
+    }
+    item {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(24.dp),
+            contentPadding = PaddingValues(
+                start = Keyline1,
+                top = 8.dp,
+                end = Keyline1,
+                bottom = 24.dp
+            )
+        ) {
+            items(contents) { content ->
+                CoverShelfRow(
+                    title = content.attributes?.name ?: "",
+                    imageUrl = content.attributes?.artwork?.url,
+                    modifier = Modifier.width(160.dp)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalCoilApi::class)
+@Composable
+private fun CoverShelfRow(
+    title: String,
+    imageUrl: String?,
+    modifier: Modifier = Modifier,
+    shape: Shape = MaterialTheme.shapes.medium
+) {
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colors.surface
+    ) {
+        ConstraintLayout {
+            val (image, text) = createRefs()
+
+            Image(
+                painter = rememberImagePainter(imageUrl),
+                contentDescription = null,
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clip(shape)
+                    .constrainAs(image) {
+                        centerHorizontallyTo(parent)
+                        top.linkTo(parent.top)
+                    }
+            )
+            Column(
+                modifier = Modifier.constrainAs(text) {
+                    centerHorizontallyTo(parent)
+                    top.linkTo(image.bottom)
+                    bottom.linkTo(parent.bottom)
+                },
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = title,
+                    color = MaterialTheme.colors.onSurface,
+                    style = MaterialTheme.typography.body2,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun HeroShelfRowPreview() {
+    AppTheme {
+        HeroShelfRow(
+            title = "Preview",
+            imageUrl = "https://www.example.com/image.jpg",
+            modifier = Modifier.width(200.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CoverShelfRowPreview() {
+    AppTheme {
+        CoverShelfRow(
+            title = "Preview",
+            imageUrl = "https://www.example.com/image.jpg",
+            modifier = Modifier.width(200.dp)
         )
     }
 }

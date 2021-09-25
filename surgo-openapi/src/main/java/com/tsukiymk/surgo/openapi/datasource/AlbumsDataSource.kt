@@ -1,15 +1,18 @@
 package com.tsukiymk.surgo.openapi.datasource
 
-import com.tsukiymk.surgo.openapi.datasource.entities.Album
+import com.tsukiymk.surgo.openapi.datasource.entities.Resource
+import com.tsukiymk.surgo.openapi.datasource.enumerations.View
 
 interface AlbumsDataSource {
     suspend fun catalog(
         albumId: Long,
-        storefront: String,
         local: String? = null,
-        views: Array<ViewType>? = null
-    ): Result<Catalog>
+        views: Array<View>? = null
+    ): Result<Resource>
 
-    @Deprecated("Use a {@link Catalog} instead.")
-    suspend fun getAlbum(albumId: Long): Result<Album>
+    // Reserved
+    suspend fun library(
+        albumId: Long,
+        local: String? = null
+    ): Result<Resource>
 }

@@ -12,9 +12,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import app.surgo.common.compose.components.InsetAwareTopAppBar
 import app.surgo.common.compose.components.Preference
+import app.surgo.common.compose.components.TopAppBar
 import app.surgo.ui.settings.R
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -57,10 +59,16 @@ private fun PluginSettingsContent(
 
     Scaffold(
         topBar = {
-            InsetAwareTopAppBar(
+            TopAppBar(
                 title = {
                     Text(stringResource(R.string.title_settings))
                 },
+                contentPadding = rememberInsetsPaddingValues(
+                    insets = LocalWindowInsets.current.systemBars,
+                    applyStart = false,
+                    applyEnd = false,
+                    applyBottom = false
+                ),
                 navigationIcon = {
                     IconButton(
                         onClick = navigateUp

@@ -10,10 +10,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import app.surgo.common.compose.components.InsetAwareTopAppBar
 import app.surgo.common.compose.components.Preference
 import app.surgo.common.compose.components.PreferenceGroup
 import app.surgo.ui.settings.R
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.google.accompanist.insets.ui.TopAppBar
 
 @Composable
 fun RootSettingsScreen(
@@ -42,10 +44,16 @@ private fun RootSettingsContent(
 ) {
     Scaffold(
         topBar = {
-            InsetAwareTopAppBar(
+            TopAppBar(
                 title = {
                     Row { Text(text = stringResource(R.string.title_settings)) }
                 },
+                contentPadding = rememberInsetsPaddingValues(
+                    insets = LocalWindowInsets.current.systemBars,
+                    applyStart = false,
+                    applyEnd = false,
+                    applyBottom = false
+                ),
                 navigationIcon = {
                     IconButton(
                         onClick = navigateUp

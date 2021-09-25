@@ -1,13 +1,9 @@
 package com.tsukiymk.surgo.openapi.datasource
 
-import com.tsukiymk.surgo.openapi.datasource.entities.Category
+import com.tsukiymk.surgo.openapi.datasource.entities.Resource
 
 interface CategoriesDataSource {
-    suspend fun catalog(
-        storefront: String,
+    suspend fun categories(
         local: String? = null
-    ): Result<Catalog>
-
-    @Deprecated("Use a {@link Catalog} instead.")
-    suspend fun getCategories(): Result<List<Category>>
+    ): Result<Resource>
 }

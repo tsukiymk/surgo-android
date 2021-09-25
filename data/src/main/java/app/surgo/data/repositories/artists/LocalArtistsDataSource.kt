@@ -1,16 +1,15 @@
 package app.surgo.data.repositories.artists
 
 import com.tsukiymk.surgo.openapi.datasource.ArtistsDataSource
-import com.tsukiymk.surgo.openapi.datasource.Catalog
-import com.tsukiymk.surgo.openapi.datasource.ViewType
+import com.tsukiymk.surgo.openapi.datasource.entities.Resource
+import com.tsukiymk.surgo.openapi.datasource.enumerations.View
 
 class LocalArtistsDataSource : ArtistsDataSource {
     override suspend fun catalog(
         artistId: Long,
-        storefront: String,
         local: String?,
-        views: Array<ViewType>?
-    ): Result<Catalog> {
+        views: Array<View>?
+    ): Result<Resource> {
         return Result.failure(NotImplementedError())
     }
 }

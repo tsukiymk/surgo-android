@@ -11,7 +11,7 @@ class ArtistsRepository @Inject constructor(
         id: Long,
         forceRefresh: Boolean = true
     ) {
-        artistsStore.fetchCatalog(id)
+        artistsStore.catalog(id)
     }
 
     suspend fun fetchPopularSongs(

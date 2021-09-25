@@ -1,15 +1,15 @@
 package com.tsukiymk.surgo.openapi.datasource
 
+import com.tsukiymk.surgo.openapi.datasource.entities.Resource
 import com.tsukiymk.surgo.openapi.datasource.entities.SearchResults
 import com.tsukiymk.surgo.openapi.datasource.enumerations.SearchType
 
 interface SearchDataSource {
     suspend fun catalog(
-        storefront: String,
         query: String,
         local: String? = null,
         types: Array<SearchType>
-    ): Result<Catalog>
+    ): Result<Resource>
 
     @Deprecated("Use a {@link Catalog} instead.")
     suspend fun search(

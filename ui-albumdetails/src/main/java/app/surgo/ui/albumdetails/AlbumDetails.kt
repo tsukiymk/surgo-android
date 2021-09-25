@@ -9,7 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import app.surgo.common.compose.components.InsetAwareTopAppBar
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.google.accompanist.insets.ui.TopAppBar
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
@@ -55,8 +57,12 @@ private fun AlbumDetailsTopAppBar(
     viewState: AlbumDetailsViewState,
     navigateUp: () -> Unit
 ) {
-    InsetAwareTopAppBar(
+    TopAppBar(
         title = {},
+        contentPadding = rememberInsetsPaddingValues(
+            insets = LocalWindowInsets.current.systemBars,
+            applyBottom = false
+        ),
         navigationIcon = {
             IconButton(onClick = navigateUp) {
                 Icon(

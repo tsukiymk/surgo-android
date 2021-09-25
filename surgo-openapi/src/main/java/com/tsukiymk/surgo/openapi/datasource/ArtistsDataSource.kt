@@ -1,10 +1,18 @@
 package com.tsukiymk.surgo.openapi.datasource
 
+import com.tsukiymk.surgo.openapi.datasource.entities.Resource
+import com.tsukiymk.surgo.openapi.datasource.enumerations.View
+
 interface ArtistsDataSource {
+    /**
+     * Get a [Resource] artist.
+     *
+     * @param id The unique identifier for the artist.
+     * @param views The views to activate for the albums resource.
+     */
     suspend fun catalog(
         artistId: Long,
-        storefront: String,
         local: String? = null,
-        views: Array<ViewType>? = null
-    ): Result<Catalog>
+        views: Array<View>? = null
+    ): Result<Resource>
 }

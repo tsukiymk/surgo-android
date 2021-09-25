@@ -8,18 +8,10 @@ import javax.inject.Singleton
 class PlaylistsRepository @Inject constructor(
     private val playlistsStore: PlaylistsStore
 ) {
-    suspend fun fetchRecommended() {
-        playlistsStore.fetchRecommended(10)
-    }
-
-    suspend fun fetchPopular() {
-        playlistsStore.fetchPopular(10)
-    }
-
     suspend fun fetchPlaylistSongs(
         id: Long,
         forceRefresh: Boolean = true
     ) {
-        playlistsStore.fetchPlaylistSongs().fetch(id, forceRefresh)
+        playlistsStore.catalog().fetch(id, forceRefresh)
     }
 }

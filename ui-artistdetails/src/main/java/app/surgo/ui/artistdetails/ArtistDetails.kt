@@ -5,7 +5,10 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -40,6 +43,7 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
+import kotlin.math.roundToInt
 
 @Composable
 fun ArtistDetailsScreen(
@@ -101,7 +105,7 @@ private fun ArtistDetailsScreen(
                 BackdropImage(
                     viewState = viewState,
                     offsetY = when (listState.firstVisibleItemIndex) {
-                        0 -> listState.firstVisibleItemScrollOffset / 3
+                        0 -> (listState.firstVisibleItemScrollOffset / 1.5f).roundToInt()
                         else -> 0
                     },
                     modifier = Modifier.fillMaxWidth()
@@ -170,6 +174,8 @@ private fun ArtistDetailsTopAppBar(
         modifier = modifier,
         contentPadding = rememberInsetsPaddingValues(
             insets = LocalWindowInsets.current.systemBars,
+            applyStart = false,
+            applyEnd = false,
             applyBottom = false
         ),
         navigationIcon = {
@@ -200,10 +206,7 @@ private fun BackdropImage(
             Modifier
                 .clipToBounds()
                 .offset {
-                    IntOffset(
-                        x = 0,
-                        y = offsetY
-                    )
+                    IntOffset(0, offsetY)
                 }
         ) {
             val painter = rememberImagePainter(viewState.artist.imageUri)

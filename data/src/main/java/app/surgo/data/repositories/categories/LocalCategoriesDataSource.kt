@@ -1,19 +1,12 @@
 package app.surgo.data.repositories.categories
 
-import com.tsukiymk.surgo.openapi.datasource.Catalog
 import com.tsukiymk.surgo.openapi.datasource.CategoriesDataSource
-import com.tsukiymk.surgo.openapi.datasource.ViewType
-import com.tsukiymk.surgo.openapi.datasource.entities.Category
+import com.tsukiymk.surgo.openapi.datasource.entities.Resource
 
 class LocalCategoriesDataSource : CategoriesDataSource {
-    override suspend fun catalog(
-        storefront: String,
+    override suspend fun categories(
         local: String?
-    ): Result<Catalog> {
-        return Result.failure(NotImplementedError())
-    }
-
-    override suspend fun getCategories(): Result<List<Category>> {
+    ): Result<Resource> {
         return Result.failure(NotImplementedError())
     }
 }

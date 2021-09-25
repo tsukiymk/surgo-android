@@ -55,6 +55,7 @@ dependencies {
 
     // Accompanist
     implementation(libs.accompanist.insets)
+    implementation(libs.accompanist.insetsUi)
 
     // Coil
     implementation(libs.coil.compose)

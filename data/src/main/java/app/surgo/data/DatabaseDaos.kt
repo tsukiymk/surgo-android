@@ -25,9 +25,5 @@ interface DatabaseDaos {
 
     fun playlistSongsDao(): PlaylistSongsDao
 
-    fun recommendedDao(): RecommendedPlaylistsDao
-
     fun popularSongsDao(): PopularSongsDao
-
-    fun popularPlaylistsDao(): PopularPlaylistsDao
 }

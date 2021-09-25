@@ -5,7 +5,10 @@ import app.surgo.data.daos.AlbumsDao
 import app.surgo.data.daos.ArtistsDao
 import app.surgo.data.daos.PlaylistsDao
 import app.surgo.data.daos.SongsDao
-import app.surgo.data.mappers.*
+import app.surgo.data.mappers.DataSourceToAlbumEntity
+import app.surgo.data.mappers.DataSourceToArtistEntity
+import app.surgo.data.mappers.DataSourceToMusicVideoEntity
+import app.surgo.data.mappers.DataSourceToSongEntity
 import app.surgo.data.resultentities.SearchResults
 import app.surgo.shared.plugin.DataSourceManager
 import com.tsukiymk.surgo.openapi.datasource.SearchDataSource
@@ -43,12 +46,6 @@ class SearchStore @Inject constructor(
                         albumsDao.insertOrUpdate(album)
                     }
                     .map { albumsDao.getAlbumByIdOrThrow(it) },
-                playlists = searchResults.playlists.orEmpty()
-                    .map {
-                        val playlist = DataSourceToPlaylistEntity(it, source)
-                        playlistsDao.insertOrUpdate(playlist)
-                    }
-                    .map { playlistsDao.getPlaylistByIdOrThrow(it) },
                 songs = searchResults.songs.orEmpty()
                     .map {
                         DataSourceToSongEntity(it, source)

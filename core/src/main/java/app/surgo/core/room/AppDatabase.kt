@@ -21,11 +21,8 @@ import app.surgo.data.entities.*
         VideoArtistEntry::class,
         PlaylistEntity::class,
         PlaylistSongEntry::class,
-        CategoryEntity::class,
-        RecommendedPlaylistEntry::class,
         PopularSongEntry::class,
-        //PopularVideoEntry::class,
-        PopularPlaylistEntry::class
+        //PopularVideoEntry::class
     ],
     views = [],
     version = 1,

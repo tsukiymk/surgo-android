@@ -41,6 +41,7 @@ class AlbumsStore @Inject constructor(
     private val albumsDataSource: AlbumsDataSource
         get() = sourceManager.factory.albumsDataSource()
 
+    /*
     suspend fun fetchAlbumSongs(): Store<Long, AlbumEntity> = StoreBuilder.from(
         fetcher = Fetcher.of { albumId ->
             albumsDataSource.getAlbum(
@@ -92,4 +93,5 @@ class AlbumsStore @Inject constructor(
             deleteAll = albumsDao::deleteAll
         )
     ).build()
+     */
 }

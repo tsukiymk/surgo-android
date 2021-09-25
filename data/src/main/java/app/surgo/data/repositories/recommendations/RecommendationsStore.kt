@@ -1,13 +1,13 @@
 package app.surgo.data.repositories.recommendations
 
-import app.surgo.data.DatabaseTransactionRunner
 import app.surgo.shared.plugin.DataSourceManager
+import com.tsukiymk.surgo.openapi.datasource.ArtistsDataSource
 import com.tsukiymk.surgo.openapi.datasource.RecommendationsDataSource
+import com.tsukiymk.surgo.openapi.datasource.entities.Resource
 import javax.inject.Inject
 
 class RecommendationsStore @Inject constructor(
-    private val sourceManager: DataSourceManager,
-    private val transactionRunner: DatabaseTransactionRunner
+    private val sourceManager: DataSourceManager
 ) {
     private val source: Long
         get() = sourceManager.key
@@ -15,10 +15,8 @@ class RecommendationsStore @Inject constructor(
     private val recommendationsDataSource: RecommendationsDataSource
         get() = sourceManager.factory.recommendationsDataSource()
 
-    suspend operator fun invoke(): List<Any> {
-        val catalog = recommendationsDataSource.catalog()
-            .getOrNull() ?: return emptyList()
-
-        return catalog.data.orEmpty()
+    suspend operator fun invoke(): Resource {
+        return recommendationsDataSource.recommendations()
+            .getOrNull() ?: Resource()
     }
 }
