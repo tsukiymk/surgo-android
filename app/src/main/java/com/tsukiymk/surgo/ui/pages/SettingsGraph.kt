@@ -1,7 +1,6 @@
 package com.tsukiymk.surgo.ui.pages
 
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation.*
 import androidx.navigation.compose.composable
 import app.surgo.ui.settings.plugin.PluginSettingsScreen
 import app.surgo.ui.settings.root.RootSettingsScreen
@@ -20,6 +19,9 @@ fun NavGraphBuilder.addSettingsGraph(
     }
     composable(SettingsDestinations.PLUGIN_ROUTE) {
         PluginSettingsScreen(
+            toPluginDetails = { pluginId ->
+                navController.navigate("${MainDestinations.PLUGIN_DETAILS_ROUTE}/$pluginId")
+            },
             navigateUp = { navController.navigateUp() }
         )
     }
@@ -28,4 +30,4 @@ fun NavGraphBuilder.addSettingsGraph(
 object SettingsDestinations {
     const val ROOT_ROUTE = "${MainDestinations.SETTINGS_ROUTE}/root"
     const val PLUGIN_ROUTE = "${MainDestinations.SETTINGS_ROUTE}/plugin"
-}
+    }

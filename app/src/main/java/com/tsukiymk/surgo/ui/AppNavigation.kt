@@ -12,6 +12,7 @@ import app.surgo.common.compose.NavArguments
 import app.surgo.ui.albumdetails.AlbumDetailsScreen
 import app.surgo.ui.artistdetails.ArtistDetailsScreen
 import app.surgo.ui.playlistdetails.PlaylistDetailsScreen
+import app.surgo.ui.plugindetails.PluginDetailsScreen
 import com.tsukiymk.surgo.ui.pages.HomeScreens
 import com.tsukiymk.surgo.ui.pages.SettingsDestinations
 import com.tsukiymk.surgo.ui.pages.addHomeGraph
@@ -81,6 +82,16 @@ fun AppNavigation(
                 navigateUp = { actions.back(backStackEntry) }
             )
         }
+        composable(
+            route = "${MainDestinations.PLUGIN_DETAILS_ROUTE}/{${NavArguments.PLUGIN_DETAILS_ID_KEY}}",
+            arguments = listOf(
+                navArgument(NavArguments.PLUGIN_DETAILS_ID_KEY) { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            PluginDetailsScreen(
+                navigateUp = { actions.back(backStackEntry) }
+            )
+        }
     }
 }
 
@@ -90,4 +101,5 @@ object MainDestinations {
     const val ALBUM_DETAILS_ROUTE = "albumDetails"
     const val ARTIST_DETAILS_ROUTE = "artistDetails"
     const val PLAYLIST_DETAILS_ROUTE = "playlistDetails"
+    const val PLUGIN_DETAILS_ROUTE = "pluginDetails"
 }

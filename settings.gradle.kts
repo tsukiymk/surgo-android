@@ -25,6 +25,7 @@ include(":ui-feed")
 include(":ui-library")
 include(":ui-playback")
 include(":ui-playlistdetails")
+include(":ui-plugindetails")
 include(":ui-settings")
 include(":app")
 

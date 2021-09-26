@@ -1,7 +1,6 @@
 package com.tsukiymk.surgo.openapi.datasource
 
 import com.tsukiymk.surgo.openapi.datasource.entities.Resource
-import com.tsukiymk.surgo.openapi.datasource.entities.Song
 import com.tsukiymk.surgo.openapi.datasource.enumerations.View
 
 interface SongsDataSource {

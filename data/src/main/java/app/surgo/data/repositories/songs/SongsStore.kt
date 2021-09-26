@@ -1,7 +1,5 @@
 package app.surgo.data.repositories.songs
 
-import app.surgo.data.entities.SongEntity
-import app.surgo.data.mappers.DataSourceToSongEntity
 import app.surgo.shared.plugin.DataSourceManager
 import com.tsukiymk.surgo.openapi.datasource.SongsDataSource
 import javax.inject.Inject

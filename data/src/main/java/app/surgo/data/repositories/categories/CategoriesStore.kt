@@ -1,7 +1,6 @@
 package app.surgo.data.repositories.categories
 
 import app.surgo.shared.plugin.DataSourceManager
-import com.tsukiymk.surgo.openapi.datasource.ArtistsDataSource
 import com.tsukiymk.surgo.openapi.datasource.CategoriesDataSource
 import com.tsukiymk.surgo.openapi.datasource.entities.Resource
 import javax.inject.Inject

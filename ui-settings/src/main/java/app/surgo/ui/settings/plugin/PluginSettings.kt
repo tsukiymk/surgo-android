@@ -34,6 +34,7 @@ enum class PluginSettingsTab(
 
 @Composable
 fun PluginSettingsScreen(
+    toPluginDetails: (Long) -> Unit,
     navigateUp: () -> Unit
 ) {
     val viewModel = hiltViewModel<PluginSettingsViewModel>()
@@ -42,7 +43,12 @@ fun PluginSettingsScreen(
     PluginSettingsContent(
         viewState = viewState,
         navigateUp = navigateUp
-    ) { viewModel.submitAction(it) }
+    ) { action ->
+        when (action) {
+            is PluginSettingsAction.OpenPluginDetails -> toPluginDetails(action.pluginId)
+            else -> viewModel.submitAction(action)
+        }
+    }
 }
 
 @OptIn(ExperimentalPagerApi::class)

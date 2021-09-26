@@ -1,7 +1,6 @@
 package app.surgo.data.repositories.albums
 
 import com.tsukiymk.surgo.openapi.datasource.AlbumsDataSource
-import com.tsukiymk.surgo.openapi.datasource.entities.Album
 import com.tsukiymk.surgo.openapi.datasource.entities.Resource
 import com.tsukiymk.surgo.openapi.datasource.enumerations.View
 
