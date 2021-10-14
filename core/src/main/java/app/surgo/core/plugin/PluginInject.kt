@@ -3,7 +3,7 @@ package app.surgo.core.plugin
 import android.content.Context
 import app.surgo.core.datastore.PreferenceStorage
 import app.surgo.core.plugin.extensions.SimpleDataSourceManager
-import app.surgo.shared.plugin.DataSourceManager
+import app.surgo.data.DataSourceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

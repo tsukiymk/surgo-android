@@ -1,6 +1,7 @@
 package com.tsukiymk.surgo.ui.pages
 
-import androidx.navigation.*
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import app.surgo.ui.settings.plugin.PluginSettingsScreen
 import app.surgo.ui.settings.root.RootSettingsScreen

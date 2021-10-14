@@ -20,10 +20,18 @@ fun LazyListScope.label(
             ProvideTextStyle(
                 value = MaterialTheme.typography.h6.copy(
                     fontWeight = FontWeight.Bold
-                )
-            ) {
-                content()
-            }
+                ),
+                content = content
+            )
         }
+    }
+}
+
+fun LazyListScope.subHeader(
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    content: @Composable () -> Unit
+) {
+    item {
+
     }
 }

@@ -1,15 +1,15 @@
 [versions]
-accompanist = "0.18.0"
-androidx-compose = "1.1.0-alpha04"
+accompanist = "0.19.0"
+androidx-compose = "1.1.0-alpha05"
 androidx-datastore = "1.0.0"
 androidx-hilt = "1.0.0-alpha03"
 androidx-lifecycle = "2.3.1"
 androidx-media2 = "1.2.0"
 androidx-paging = "3.0.1"
-androidx-room = "2.3.0"
-dagger = "2.38.1"
+androidx-room = "2.4.0-alpha05"
+dagger = "2.39.1"
 exoplayer = "2.15.1"
-kotlin = "1.5.30"
+kotlin = "1.5.31"
 kotlinx = "1.5.1"
 
 [libraries]
@@ -28,7 +28,7 @@ android-exoplayer-extensionMediaSession = { module = "com.google.android.exoplay
 android-exoplayer-extensionCast = { module = "com.google.android.exoplayer:extension-cast", version.ref = "exoplayer" }
 android-material-material = "com.google.android.material:material:1.4.0"
 
-android-tools-build-gradle = "com.android.tools.build:gradle:7.0.2"
+android-tools-build-gradle = "com.android.tools.build:gradle:7.0.3"
 android-tools-desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.5"
 
 androidx-activity-compose = "androidx.activity:activity-compose:1.3.1"
@@ -51,12 +51,13 @@ androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-kt
 androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-media2-session = { module = "androidx.media2:media2-session", version.ref = "androidx-media2" }
 androidx-media2-player = { module = "androidx.media2:media2-player", version.ref = "androidx-media2" }
-androidx-navigation-compose = "androidx.navigation:navigation-compose:2.4.0-alpha09"
+androidx-navigation-compose = "androidx.navigation:navigation-compose:2.4.0-alpha10"
 androidx-paging-common = { module = "androidx.paging:paging-common-ktx", version.ref = "androidx-paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-common-ktx", version.ref = "androidx-paging" }
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime-ktx", version.ref = "androidx-paging" }
 androidx-palette-palette = "androidx.palette:palette-ktx:1.0.0"
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
+androidx-room-paging = { module = "androidx.room:room-paging", version.ref="androidx-room" }
 androidx-room-room = { module = "androidx.room:room-ktx", version.ref = "androidx-room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
 androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "androidx-room" }
@@ -64,13 +65,13 @@ androidx-test-ext-jUnit = "androidx.test.ext:junit-ktx:1.1.3"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.4.0"
 androidx-work-runtime = "androidx.work:work-runtime-ktx:2.6.0"
 
-coil-compose = "io.coil-kt:coil-compose:1.3.2"
+coilKt-compose = "io.coil-kt:coil-compose:1.4.0"
 
 dagger-hiltAndroid = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }
 dagger-hiltAndroidCompiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "dagger" }
 dagger-hiltAndroidGradle = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "dagger" }
 
-jetbrains-dokka-gradle = "org.jetbrains.dokka:dokka-gradle-plugin:1.5.30"
+jetbrains-dokka-gradle = "org.jetbrains.dokka:dokka-gradle-plugin:1.5.31"
 
 junit-jUnit = "junit:junit:4.13.2"
 

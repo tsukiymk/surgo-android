@@ -8,7 +8,7 @@ import app.surgo.data.entities.SongArtistEntry
 import app.surgo.data.mappers.CatalogToArtistEntity
 import app.surgo.data.mappers.CatalogToSongEntity
 import app.surgo.data.repositories.lastrequests.LastRequestsStore
-import app.surgo.shared.plugin.DataSourceManager
+import app.surgo.data.DataSourceManager
 import com.dropbox.android.external.store4.Fetcher
 import com.dropbox.android.external.store4.SourceOfTruth
 import com.dropbox.android.external.store4.Store
@@ -35,10 +35,10 @@ class PlaylistsStore @Inject constructor(
     private val songArtistsDao: SongArtistsDao
 ) {
     private val source: Long
-        get() = sourceManager.key
+        get() = sourceManager.selectedSource
 
     private val playlistsDataSource: PlaylistsDataSource
-        get() = sourceManager.factory.playlistsDataSource()
+        get() = sourceManager[source].playlistsDataSource()
 
     suspend fun catalog(): Store<Long, List<PlaylistSongEntry>> = StoreBuilder.from(
         fetcher = Fetcher.of { playlistId ->

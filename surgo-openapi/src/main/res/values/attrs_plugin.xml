@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- A unique name for the given item.  This must use a Java-style naming
+         convention to ensure the name is unique, for example
+         "com.mycompany.MyName". -->
+    <attr name="name" format="string" />
+
+    <attr name="label" format="reference|string" />
+
+    <!-- A Drawable resource providing a graphical representation of its
+         associated item.  Use with the
+         tag (to supply a specific icon for a action).  This must be
+         a reference to a Drawable resource containing the image definition. -->
+    <attr name="icon" format="reference" />
+
+    <declare-styleable name="SurgoPlugin" />
+
+    <declare-styleable name="SurgoPluginMetaData" parent="SurgoPlugin">
+        <attr name="name" />
+        <attr name="value" format="string|integer|color|float|boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SurgoPluginExtensions" parent="SurgoPlugin" />
+
+    <declare-styleable name="SurgoPluginDataSource" parent="SurgoPluginExtensions">
+        <attr name="factoryClass" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="SurgoPluginActions" parent="SurgoPlugin" />
+
+    <declare-styleable name="SurgoPluginGroup" parent="SurgoPluginActions">
+        <attr name="label" />
+    </declare-styleable>
+
+    <declare-styleable name="SurgoPluginAction" parent="SurgoPluginActions SurgoPluginGroup">
+        <attr name="name" />
+        <attr name="label" />
+        <attr name="icon" />
+    </declare-styleable>
+</resources>

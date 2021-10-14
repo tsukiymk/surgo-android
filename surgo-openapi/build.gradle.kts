@@ -1,12 +1,31 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-    id("kotlin")
+    id("com.android.library")
+    kotlin("android")
     id("org.jetbrains.dokka")
     id("maven-publish")
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+android {
+    compileSdk = ApplicationConfig.COMPILE_SDK_VERSION
+    defaultConfig {
+        minSdk = ApplicationConfig.MIN_SDK_VERSION
+        targetSdk = ApplicationConfig.TARGET_SDK_VERSION
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
@@ -20,12 +39,20 @@ tasks {
         outputDirectory.set(buildDir.resolve("dokka"))
     }
 
-    register("sourcesJar", Jar::class) {
-        archiveClassifier.set("sources")
-        from(sourceSets.getByName("main").java.srcDirs)
+    withType<DokkaTask>().configureEach {
+        dokkaSourceSets {
+            named("main") {
+                noAndroidSdkLink.set(true)
+            }
+        }
     }
 
-    register("javadocJar", Jar::class) {
+    register("sourcesJar", Jar::class) {
+        archiveClassifier.set("sources")
+        from(android.sourceSets.getByName("main").java.srcDirs)
+    }
+
+    register("androidJavadocJar", Jar::class) {
         val tasks = project.tasks.withType(DokkaTask::class.java)
         val dokkaTask = tasks.findByName("dokkaHtml") ?: tasks.getByName("dokka")
 
@@ -40,11 +67,11 @@ afterEvaluate {
         publications {
             create<MavenPublication>("maven") {
                 val sourcesJar by tasks
-                val javadocJar by tasks
+                val androidJavadocJar by tasks
 
                 artifact(sourcesJar)
-                artifact(javadocJar)
-                from(components["java"])
+                artifact(androidJavadocJar)
+                from(components["release"])
 
                 groupId = "com.tsukiymk.surgo"
                 artifactId = "surgo-openapi"

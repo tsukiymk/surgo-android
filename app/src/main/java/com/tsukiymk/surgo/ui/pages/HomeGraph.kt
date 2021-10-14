@@ -37,12 +37,14 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.surgo.common.compose.components.BottomNavigationHeight
-import app.surgo.common.compose.components.InsetAwareNavigationRail
+import app.surgo.common.compose.components.NavigationRail
 import app.surgo.common.compose.theme.AppTheme
 import app.surgo.ui.explore.ExploreScreen
 import app.surgo.ui.feed.FeedScreen
 import app.surgo.ui.library.LibraryScreen
+import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.tsukiymk.surgo.R
 import com.tsukiymk.surgo.ui.MainDestinations
 
@@ -84,8 +86,10 @@ fun NavGraphBuilder.addHomeGraph(
 
 @Stable
 @Composable
-private fun NavController.currentScreenAsState(): State<HomeScreens> {
-    val selectedItem = remember { mutableStateOf(HomeScreens.FEED) }
+private fun NavController.currentScreenAsState(
+    startDestination: HomeScreens
+): State<HomeScreens> {
+    val selectedItem = remember { mutableStateOf(startDestination) }
 
     DisposableEffect(this) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
@@ -120,7 +124,7 @@ fun HomeBottomNavigation(
     Surface(modifier) {
         val tabs = remember { HomeScreens.values() }
 
-        val currentSelectedTab by navController.currentScreenAsState()
+        val currentSelectedTab by navController.currentScreenAsState(startDestination)
         val currentIndex = tabs.find { it == currentSelectedTab }?.ordinal ?: startDestination.ordinal
 
         HomeBottomNavigationLayout(
@@ -270,8 +274,7 @@ private fun HomeBottomNavigationItem(
             content = {
                 if (icon != null) {
                     Box(
-                        modifier = Modifier
-                            .layoutId("icon")
+                        modifier = Modifier.layoutId("icon")
                             .padding(horizontal = 2.dp),
                         content = icon
                     )
@@ -281,8 +284,7 @@ private fun HomeBottomNavigationItem(
 
                 if (label != null) {
                     Box(
-                        modifier = Modifier
-                            .layoutId("label")
+                        modifier = Modifier.layoutId("label")
                             .padding(horizontal = 2.dp)
                             .graphicsLayer {
                                 alpha = animationProgress
@@ -326,8 +328,7 @@ private fun HomeBottomNavigationIndicator(
     shape: Shape = BottomNavigationIndicatorShape
 ) {
     Spacer(
-        modifier
-            .fillMaxSize()
+        modifier.fillMaxSize()
             .then(BottomNavigationItemHorizontalPadding)
             .border(strokeWidth, color, shape)
     )
@@ -337,12 +338,19 @@ private fun HomeBottomNavigationIndicator(
 @Composable
 fun HomeNavigationRail(
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    startDestination: HomeScreens = HomeScreens.FEED
 ) {
-    InsetAwareNavigationRail(modifier) {
+    NavigationRail(
+        modifier = modifier,
+        contentPadding = rememberInsetsPaddingValues(
+            insets = LocalWindowInsets.current.systemBars,
+            applyEnd = false
+        )
+    ) {
         val items = remember { HomeScreens.values() }
 
-        val currentSelectedItem by navController.currentScreenAsState()
+        val currentSelectedItem by navController.currentScreenAsState(startDestination)
 
         items.forEach { item ->
             NavigationRailItem(

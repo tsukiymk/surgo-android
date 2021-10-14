@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.ui)
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.util)
+    implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.hilt.lifecycleViewModel)
     implementation(libs.androidx.hilt.navigationCompose)
     kapt(libs.androidx.hilt.compiler)
@@ -58,7 +59,7 @@ dependencies {
     implementation(libs.accompanist.insetsUi)
 
     // Coil
-    implementation(libs.coil.compose)
+    implementation(libs.coilKt.compose)
 
     // Local unit tests
     testImplementation(libs.junit.jUnit)

@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -41,7 +42,7 @@ dependencies {
     implementation(libs.androidx.room.room)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.work.runtime)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
     // Dagger
     implementation(libs.dagger.hiltAndroid)

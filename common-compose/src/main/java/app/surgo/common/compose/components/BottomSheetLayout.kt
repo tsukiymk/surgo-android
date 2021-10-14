@@ -175,8 +175,7 @@ fun BottomSheetLayout(
 
                 val sheetContentPlaceables = subcompose(BottomSheetLayoutContent.SheetContent) {
                     Surface(
-                        modifier = swipeable
-                            .requiredHeightIn(min = sheetPeekHeight)
+                        modifier = swipeable.requiredHeightIn(min = sheetPeekHeight)
                             .onGloballyPositioned {
                                 bottomSheetHeight = it.size.height.toFloat()
                             },

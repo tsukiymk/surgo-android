@@ -5,12 +5,12 @@ import app.surgo.data.daos.AlbumsDao
 import app.surgo.data.daos.ArtistsDao
 import app.surgo.data.daos.PlaylistsDao
 import app.surgo.data.daos.SongsDao
-import app.surgo.data.mappers.DataSourceToAlbumEntity
-import app.surgo.data.mappers.DataSourceToArtistEntity
-import app.surgo.data.mappers.DataSourceToMusicVideoEntity
-import app.surgo.data.mappers.DataSourceToSongEntity
 import app.surgo.data.resultentities.SearchResults
-import app.surgo.shared.plugin.DataSourceManager
+import app.surgo.data.DataSourceManager
+import app.surgo.data.mappers.CatalogToAlbumEntity
+import app.surgo.data.mappers.CatalogToArtistEntity
+import app.surgo.data.mappers.CatalogToSongEntity
+import app.surgo.data.mappers.CatalogToVideoEntity
 import com.tsukiymk.surgo.openapi.datasource.SearchDataSource
 import com.tsukiymk.surgo.openapi.datasource.enumerations.SearchType
 import javax.inject.Inject
@@ -24,42 +24,40 @@ class SearchStore @Inject constructor(
     private val songsDao: SongsDao,
 ) {
     private val source: Long
-        get() = sourceManager.key
+        get() = sourceManager.selectedSource
 
     private val searchDataSource: SearchDataSource
-        get() = sourceManager.factory.searchDataSource()
+        get() = sourceManager[source].searchDataSource()
 
     suspend fun search(query: String, types: Array<SearchType>): SearchResults {
-        val searchResults = searchDataSource.search(query, types).getOrNull() ?: return SearchResults()
+        val results = searchDataSource.catalog(
+            query = query,
+            types = types
+        ).getOrNull()?.results ?: return SearchResults()
 
         return transactionRunner {
             SearchResults(
-                artists = searchResults.artists.orEmpty()
+                artists = results.artist?.data.orEmpty()
                     .map {
-                        val artist = DataSourceToArtistEntity(it, source)
+                        val artist = CatalogToArtistEntity(it, source)
                         artistsDao.insertOrUpdate(artist)
                     }
                     .map { artistsDao.getArtistByIdOrThrow(it) },
-                albums = searchResults.albums.orEmpty()
+                albums = results.album?.data.orEmpty()
                     .map {
-                        val album = DataSourceToAlbumEntity(it, source)
+                        val album = CatalogToAlbumEntity(it, source)
                         albumsDao.insertOrUpdate(album)
                     }
                     .map { albumsDao.getAlbumByIdOrThrow(it) },
-                songs = searchResults.songs.orEmpty()
+                songs = results.song?.data.orEmpty()
                     .map {
-                        DataSourceToSongEntity(it, source)
+                        CatalogToSongEntity(it, source)
                     },
-                videos = searchResults.videos.orEmpty()
+                videos = results.video?.data.orEmpty()
                     .map {
-                        DataSourceToMusicVideoEntity(it, source)
+                        CatalogToVideoEntity(it, source)
                     }
             )
         }
-    }
-
-    suspend fun suggestions(): List<String> {
-        return searchDataSource.getSuggestion()
-            .getOrNull() ?: emptyList()
     }
 }

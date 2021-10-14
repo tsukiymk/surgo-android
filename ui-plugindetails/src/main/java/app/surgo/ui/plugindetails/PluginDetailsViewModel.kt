@@ -1,7 +1,9 @@
-package app.surgo.ui.settings.plugin
+package app.surgo.ui.plugindetails
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.surgo.common.compose.NavArguments
 import app.surgo.core.datastore.PreferenceStorage
 import app.surgo.core.plugin.PluginManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,15 +12,19 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-internal class PluginSettingsViewModel @Inject constructor(
+internal class PluginDetailsViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val preferenceStorage: PreferenceStorage,
     private val pluginManager: PluginManager
 ) : ViewModel() {
-    private val _state = MutableStateFlow(PluginSettingsViewState())
-    val state: StateFlow<PluginSettingsViewState>
+    private val _state = MutableStateFlow(PluginDetailsViewState())
+    val state: StateFlow<PluginDetailsViewState>
         get() = _state
 
-    private val pendingActions = MutableSharedFlow<PluginSettingsAction>()
+    private val pluginId = savedStateHandle.get<Long>(NavArguments.PLUGIN_DETAILS_ID_KEY)
+        ?: throw NullPointerException()
+
+    private val pendingActions = MutableSharedFlow<PluginDetailsAction>()
 
     init {
         viewModelScope.launch {
@@ -26,9 +32,11 @@ internal class PluginSettingsViewModel @Inject constructor(
                 preferenceStorage.selectedDataSource,
                 pluginManager.observableInstalled
             ) { selectedDataSource, installedPlugins ->
-                PluginSettingsViewState(
-                    selectedDataSource = selectedDataSource,
-                    installedPlugins = installedPlugins
+                val plugin = installedPlugins.find { pluginId == it.id }
+
+                PluginDetailsViewState(
+                    plugin = plugin,
+                    isDefaultDataSource = selectedDataSource == plugin?.packageName
                 )
             }.collect { _state.value = it }
         }
@@ -36,16 +44,15 @@ internal class PluginSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             pendingActions.collect { action ->
                 when (action) {
-                    is PluginSettingsAction.ChangeDataSource -> {
+                    is PluginDetailsAction.ChangeDataSource -> {
                         preferenceStorage.selectDataSource(action.dataSource)
                     }
-                    else -> {}
                 }
             }
         }
     }
 
-    fun submitAction(action: PluginSettingsAction) {
+    fun submitAction(action: PluginDetailsAction) {
         viewModelScope.launch {
             pendingActions.emit(action)
         }

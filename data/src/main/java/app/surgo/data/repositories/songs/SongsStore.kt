@@ -1,6 +1,6 @@
 package app.surgo.data.repositories.songs
 
-import app.surgo.shared.plugin.DataSourceManager
+import app.surgo.data.DataSourceManager
 import com.tsukiymk.surgo.openapi.datasource.SongsDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -10,8 +10,8 @@ class SongsStore @Inject constructor(
     private val sourceManager: DataSourceManager
 ) {
     private val source
-        get() = sourceManager.key
+        get() = sourceManager.selectedSource
 
     private val songsDataSource: SongsDataSource
-        get() = sourceManager.factory.songsDataSource()
+        get() = sourceManager[source].songsDataSource()
 }

@@ -1,5 +1,6 @@
 package app.surgo.core.plugin
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import kotlinx.coroutines.async
@@ -25,12 +26,12 @@ object PluginLoader {
         }
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
     fun loadPlugins(context: Context): List<PluginDescriptor> {
         val packageManager = context.packageManager
         val filteredPackages = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
             .filter { packageInfo ->
-                packageInfo.applicationInfo.metaData
-                    ?.keySet()
+                packageInfo.applicationInfo.metaData?.keySet()
                     .orEmpty()
                     .any { it.equals(PLUGIN_KEY) }
             }
@@ -55,13 +56,20 @@ object PluginLoader {
         } catch (cause: PackageManager.NameNotFoundException) {
             throw cause
         }
-        val parser = PluginXmlReader(resources, applicationInfo.metaData.getInt(PLUGIN_KEY))
+        val packageInfo = try {
+            packageManager.getPackageInfo(packageName, 0)
+        } catch (cause: PackageManager.NameNotFoundException) {
+            throw cause
+        }
+        val parser = PluginXmlParser(resources, applicationInfo.metaData.getInt(PLUGIN_KEY))
 
         return PluginDescriptor(
-            name = parser.displayName,
-
             packageName = applicationInfo.packageName,
+            version = packageInfo.versionName,
+            name = parser.displayName,
+            vendor = parser.vendor
         ).apply {
+            actions = parser.actions
             extensions = parser.extensions
         }
     }

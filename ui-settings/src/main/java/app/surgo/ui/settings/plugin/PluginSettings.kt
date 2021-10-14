@@ -1,5 +1,7 @@
 package app.surgo.ui.settings.plugin
 
+import android.content.Intent
+import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,13 +9,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import app.surgo.common.compose.components.ExtendedTopAppBar
 import app.surgo.common.compose.components.Preference
-import app.surgo.common.compose.components.TopAppBar
 import app.surgo.ui.settings.R
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
@@ -40,12 +43,20 @@ fun PluginSettingsScreen(
     val viewModel = hiltViewModel<PluginSettingsViewModel>()
     val viewState by viewModel.state.collectAsState()
 
+    val context = LocalContext.current
+
     PluginSettingsContent(
         viewState = viewState,
         navigateUp = navigateUp
     ) { action ->
         when (action) {
             is PluginSettingsAction.OpenPluginDetails -> toPluginDetails(action.pluginId)
+            is PluginSettingsAction.RequestUninstall -> {
+                val uri = Uri.fromParts("package", action.packageName, null)
+                val intent = Intent(Intent.ACTION_DELETE, uri)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+            }
             else -> viewModel.submitAction(action)
         }
     }
@@ -61,11 +72,11 @@ private fun PluginSettingsContent(
     val scope = rememberCoroutineScope()
 
     val tabs = remember { PluginSettingsTab.values() }
-    val pagerState = rememberPagerState(pageCount = tabs.size)
+    val pagerState = rememberPagerState()
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            ExtendedTopAppBar(
                 title = {
                     Text(stringResource(R.string.title_settings))
                 },
@@ -116,6 +127,7 @@ private fun PluginSettingsContent(
         }
     ) {
         HorizontalPager(
+            count = tabs.size,
             state = pagerState
         ) { page ->
             when (tabs[page]) {
@@ -145,17 +157,30 @@ private fun InstalledContent(
             items(viewState.installedPlugins) { plugin ->
                 Preference(
                     title = plugin.name ?: "",
-                    onClick = {},
+                    onClick = { emit(PluginSettingsAction.OpenPluginDetails(plugin.id)) },
                     trailing = {
+                        var expanded by remember { mutableStateOf(false) }
+
                         IconButton(
-                            onClick = {
-                                emit(PluginSettingsAction.ChangeDataSource(plugin.packageName))
-                            }
+                            onClick = { expanded = true }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Settings,
+                                imageVector = Icons.Default.MoreVert,
                                 contentDescription = null
                             )
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            DropdownMenuItem({ /*TODO*/ }) {
+                                Text("检查更新")
+                            }
+                            DropdownMenuItem({
+                                emit(PluginSettingsAction.RequestUninstall(plugin.packageName))
+                            }) {
+                                Text("卸载")
+                            }
                         }
                     }
                 )

@@ -62,7 +62,7 @@ dependencies {
     implementation(libs.accompanist.swipeRefresh)
 
     // Coil
-    implementation(libs.coil.compose)
+    implementation(libs.coilKt.compose)
 
     // Local unit tests
     testImplementation(libs.junit.jUnit)

@@ -9,5 +9,6 @@ data class Resource(
     val attributes: Attributes? = null,
     val data: List<Resource>? = null,
     val relationships: Relationships? = null,
+    val results: Results? = null,
     val views: Map<View, Resource>? = null
 )

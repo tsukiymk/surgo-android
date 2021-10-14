@@ -103,7 +103,7 @@ dependencies {
     implementation(libs.android.exoplayer.extensionCast)
 
     // Coil
-    implementation(libs.coil.compose)
+    implementation(libs.coilKt.compose)
 
     // Local unit tests
     testImplementation(libs.junit.jUnit)

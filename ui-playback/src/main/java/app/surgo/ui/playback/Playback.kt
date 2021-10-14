@@ -77,8 +77,6 @@ private fun PlaybackScreen(
     emit: (PlaybackAction) -> Unit
 ) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
-        /**
-         * TODO: Unstable function
         PlaybackBackground(
             viewState = viewState,
             modifier = Modifier
@@ -86,7 +84,6 @@ private fun PlaybackScreen(
                     alpha = lerp(0f, 1f, 0.3f, 1f, openFraction)
                 }
         )
-         */
 
         /**
          * FIXME: [ContentScale] is still working
@@ -113,7 +110,7 @@ private fun PlaybackScreen(
             viewState = viewState,
             modifier = Modifier
                 .graphicsLayer {
-                    alpha = lerp(0f, 1f, 0.8f, 1f, openFraction)
+                   alpha = lerp(0f, 1f, 0.8f, 1f, openFraction)
                 },
             emit = emit
         )
@@ -143,13 +140,6 @@ private fun BoxWithConstraintsScope.PlaybackBackground(
 
     Box(modifier) {
         Image(
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer {
-                    scaleX = scale
-                    scaleY = scale
-                    rotationZ = rotate
-                },
             painter = rememberImagePainter(
                 data = viewState.nowPlaying.displayIconUri,
                 builder = {
@@ -163,7 +153,14 @@ private fun BoxWithConstraintsScope.PlaybackBackground(
                     )
                 },
             ),
-            contentDescription = null
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                    rotationZ = rotate
+                }
         )
     }
 }
@@ -303,10 +300,11 @@ private fun PlaybackController(
         ) {
             Icon(
                 painter = rememberVectorPainter(
-                    if (isPlaying)
+                    if (isPlaying) {
                         Icons.Rounded.PauseCircleFilled
-                    else
+                    } else {
                         Icons.Rounded.PlayCircleFilled
+                    }
                 ),
                 contentDescription = null,
                 modifier = Modifier.size(72.dp)
@@ -342,12 +340,12 @@ private fun PlaybackMiniControls(
 
             Box(
                 Modifier
+                    .clip(MaterialTheme.shapes.medium)
                     .constrainAs(artwork) {
                         start.linkTo(parent.start, 12.dp)
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                     }
-                    .clip(MaterialTheme.shapes.medium)
             ) {
                 Image(
                     modifier = Modifier
@@ -368,10 +366,11 @@ private fun PlaybackMiniControls(
                 IconButton(onClick = { emit(PlaybackAction.PlayOrPause("")) }) {
                     Icon(
                         painter = rememberVectorPainter(
-                            if (viewState.playbackState.isPlaying)
+                            if (viewState.playbackState.isPlaying) {
                                 Icons.Default.Pause
-                            else
+                            } else {
                                 Icons.Default.PlayArrow
+                            }
                         ),
                         contentDescription = null
                     )

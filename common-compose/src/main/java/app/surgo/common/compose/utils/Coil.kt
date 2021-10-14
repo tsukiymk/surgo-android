@@ -44,12 +44,13 @@ object FormatTextInterceptor : Interceptor {
         if (data is String && size is PixelSize) {
             val args = mapOf(
                 Pair("w", size.width.toString()),
-                Pair("h", size.height.toString())
+                Pair("h", size.height.toString()),
+                Pair("c", "cc"),
+                Pair("f", "webp")
             )
             val url = HttpUrl.get(format(data, args))
                 .newBuilder()
                 .build()
-            println(url)
             val request = chain.request.newBuilder().data(url).build()
 
             return chain.proceed(request)

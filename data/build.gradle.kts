@@ -32,9 +32,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.compose.runtime.runtime)
     implementation(libs.androidx.paging.common)
-    implementation(libs.androidx.room.room)
     implementation(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
 
     // Dagger
     implementation(libs.dagger.hiltAndroid)

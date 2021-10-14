@@ -1,6 +1,6 @@
 package app.surgo.data.repositories.categories
 
-import app.surgo.shared.plugin.DataSourceManager
+import app.surgo.data.DataSourceManager
 import com.tsukiymk.surgo.openapi.datasource.CategoriesDataSource
 import com.tsukiymk.surgo.openapi.datasource.entities.Resource
 import javax.inject.Inject
@@ -11,10 +11,10 @@ class CategoriesStore @Inject constructor(
     private val sourceManager: DataSourceManager
 ) {
     private val source
-        get() = sourceManager.key
+        get() = sourceManager.selectedSource
 
     private val categoriesDataSource: CategoriesDataSource
-        get() = sourceManager.factory.categoriesDataSource()
+        get() = sourceManager[source].categoriesDataSource()
 
     suspend operator fun invoke(): Resource {
         return categoriesDataSource.categories()

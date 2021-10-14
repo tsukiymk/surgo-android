@@ -3,8 +3,9 @@ package app.surgo.core.plugin.extensions
 import android.content.Context
 import android.content.pm.PackageManager
 import app.surgo.core.datastore.PreferenceStorage
+import app.surgo.core.plugin.PluginDescriptor
 import app.surgo.core.plugin.PluginManager
-import app.surgo.shared.plugin.DataSourceManager
+import app.surgo.data.DataSourceManager
 import com.tsukiymk.surgo.openapi.DataSourceFactory
 import dalvik.system.PathClassLoader
 import kotlinx.coroutines.CoroutineScope
@@ -13,7 +14,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.security.MessageDigest
 
 class SimpleDataSourceManager(
     private val context: Context,
@@ -23,7 +23,12 @@ class SimpleDataSourceManager(
     private val coroutineJob = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + coroutineJob)
 
-    private val factoryMap = HashMap<Long, DataSourceFactory>()
+    private val loadedDataSources = HashMap<Long, DataSourceFactory>()
+
+    private var _selectedSource = 0L
+    private val internalDataSourceFactory by lazy {
+        InternalDataSourceFactory()
+    }
 
     init {
         coroutineScope.launch {
@@ -31,27 +36,31 @@ class SimpleDataSourceManager(
                 pluginManager.observableInstalled,
                 preferenceStorage.selectedDataSource
             ) { plugins, selectedDataSource ->
-                plugins.find { it.packageName == selectedDataSource }
-                    ?.let { plugin ->
-                        val beanClass = plugin.extensions.orEmpty()
-                            .find { it.name == "datasource" }
-                            ?.beanClass
+                plugins.filter { !loadedDataSources.containsKey(it.id) }
+                    .map { descriptor ->
+                        val beanClass = descriptor.extensions.orEmpty()
+                            .find { it.name == "datasource" }?.beanClass
                         if (beanClass != null) {
-                            loadClass(plugin.packageName, beanClass)
-                            pluginManager.messageBus.subscribeDataSource.emit(key)
+                            loadClass(descriptor, beanClass)
                         }
+                    }
+
+                plugins.find { selectedDataSource == it.packageName }
+                    ?.let { plugin ->
+                        _selectedSource = plugin.id
+                        pluginManager.messageBus.subscribeDataSource.emit(plugin.id)
                     }
             }.collect()
         }
     }
 
     private fun loadClass(
-        packageName: String,
+        descriptor: PluginDescriptor,
         beanClass: String
     ) {
         val packageManager = context.packageManager
         val applicationInfo = try {
-            packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+            packageManager.getApplicationInfo(descriptor.packageName, PackageManager.GET_META_DATA)
         } catch (error: PackageManager.NameNotFoundException) {
             throw error
         }
@@ -70,14 +79,7 @@ class SimpleDataSourceManager(
                 ).newInstance()
             ) {
                 is DataSourceFactory -> {
-                    val bytes = MessageDigest.getInstance("MD5")
-                        .digest(factory.name.toByteArray())
-
-                    key = (0..7).map {
-                        bytes[it].toLong() and 0xff shl 8 * (7 - it)
-                    }.reduce(Long::or) and Long.MAX_VALUE
-                    factory = instance
-                    factoryMap[key] = instance
+                    loadedDataSources[descriptor.id] = instance
                 }
                 else -> throw Exception("Unknown source class type! ${instance.javaClass}")
             }
@@ -86,11 +88,10 @@ class SimpleDataSourceManager(
         }
     }
 
-    override var key: Long = 0
+    override val selectedSource: Long
+        get() = _selectedSource
 
-    override var factory: DataSourceFactory = InternalDataSourceFactory()
-        private set
-
-    override val map: Map<Long, DataSourceFactory>
-        get() = factoryMap
+    override operator fun get(key: Long): DataSourceFactory {
+        return loadedDataSources[key] ?: internalDataSourceFactory
+    }
 }

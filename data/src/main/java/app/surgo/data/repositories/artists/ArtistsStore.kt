@@ -9,7 +9,7 @@ import app.surgo.data.mappers.CatalogToAlbumEntity
 import app.surgo.data.mappers.CatalogToArtistEntity
 import app.surgo.data.mappers.CatalogToSongEntity
 import app.surgo.data.mappers.CatalogToVideoEntity
-import app.surgo.shared.plugin.DataSourceManager
+import app.surgo.data.DataSourceManager
 import com.tsukiymk.surgo.openapi.datasource.ArtistsDataSource
 import com.tsukiymk.surgo.openapi.datasource.enumerations.Type
 import com.tsukiymk.surgo.openapi.datasource.enumerations.View
@@ -27,10 +27,10 @@ class ArtistsStore @Inject constructor(
     private val popularSongsDao: PopularSongsDao
 ) {
     private val source: Long
-        get() = sourceManager.key
+        get() = sourceManager.selectedSource
 
     private val artistsDataSource: ArtistsDataSource
-        get() = sourceManager.factory.artistsDataSource()
+        get() = sourceManager[source].artistsDataSource()
 
     // TODO: Complex block
     suspend fun catalog(

@@ -5,10 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -34,6 +31,7 @@ import app.surgo.common.compose.components.StaggeredGrid
 import app.surgo.common.compose.components.label
 import app.surgo.common.compose.runtime.LocalContentPadding
 import app.surgo.common.compose.utils.iconButtonBackgroundScrim
+import app.surgo.common.compose.utils.notifyOffsetAsState
 import app.surgo.data.entities.AlbumEntity
 import app.surgo.data.entities.SongEntity
 import app.surgo.data.entities.VideoEntity
@@ -55,7 +53,7 @@ fun ArtistDetailsScreen(
     ArtistDetailsScreen(
         viewState = viewState,
         navigateUp = navigateUp,
-    ) { action -> viewModel.submitAction(action) }
+    ) { viewModel.submitAction(it) }
 }
 
 @Composable
@@ -69,30 +67,16 @@ private fun ArtistDetailsScreen(
     Scaffold(
         topBar = {
             var topBarHeight by remember { mutableStateOf(0) }
-            val collapsed by remember {
-                derivedStateOf {
-                    val visibleItemsInfo = listState.layoutInfo.visibleItemsInfo
-                    when {
-                        visibleItemsInfo.isEmpty() -> false
-                        topBarHeight <= 0 -> false
-                        else -> {
-                            val firstVisibleItem = visibleItemsInfo[0]
-                            when {
-                                firstVisibleItem.index > 0 -> true
-                                else -> firstVisibleItem.size + firstVisibleItem.offset <= topBarHeight
-                            }
-                        }
-                    }
-                }
-            }
+            val collapsed by notifyOffsetAsState(
+                visibleItemsInfo = listState.layoutInfo.visibleItemsInfo,
+                notifyTrigger = topBarHeight
+            )
 
             ArtistDetailsTopAppBar(
                 viewState = viewState,
                 collapsed = collapsed,
                 navigateUp = navigateUp,
-                modifier = Modifier.onSizeChanged {
-                    topBarHeight = it.height
-                }
+                modifier = Modifier.onSizeChanged { topBarHeight = it.height }
             )
         }
     ) {
@@ -212,11 +196,11 @@ private fun BackdropImage(
             val painter = rememberImagePainter(viewState.artist.imageUri)
 
             Image(
+                painter = painter,
+                contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
                     .aspectRatio(1f),
-                painter = painter,
-                contentDescription = null,
                 contentScale = ContentScale.Crop
             )
         }

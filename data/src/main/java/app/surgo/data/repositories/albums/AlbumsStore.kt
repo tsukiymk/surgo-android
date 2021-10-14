@@ -6,7 +6,7 @@ import app.surgo.data.daos.ArtistsDao
 import app.surgo.data.daos.SongArtistsDao
 import app.surgo.data.daos.SongsDao
 import app.surgo.data.repositories.lastrequests.LastRequestsStore
-import app.surgo.shared.plugin.DataSourceManager
+import app.surgo.data.DataSourceManager
 import com.tsukiymk.surgo.openapi.datasource.AlbumsDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -25,10 +25,10 @@ class AlbumsStore @Inject constructor(
     private val songArtistsDao: SongArtistsDao
 ) {
     private val source
-        get() = sourceManager.key
+        get() = sourceManager.selectedSource
 
     private val albumsDataSource: AlbumsDataSource
-        get() = sourceManager.factory.albumsDataSource()
+        get() = sourceManager[source].albumsDataSource()
 
     /*
     suspend fun fetchAlbumSongs(): Store<Long, AlbumEntity> = StoreBuilder.from(

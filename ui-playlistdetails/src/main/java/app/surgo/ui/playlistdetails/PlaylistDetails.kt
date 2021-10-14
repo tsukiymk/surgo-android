@@ -159,8 +159,7 @@ private fun LazyListScope.lazyItemOfSongs(
             Row(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
                 Text(
                     text = stringResource(R.string.text_songs),
-                    modifier = Modifier
-                        .weight(1f)
+                    modifier = Modifier.weight(1f)
                         .wrapContentWidth(Alignment.Start),
                     style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
                     maxLines = 1,
@@ -189,8 +188,8 @@ private fun SongColumn(
     Surface(modifier) {
         Row(
             modifier = Modifier
-                .clickable { onItemClicked(song.id) }
-                .padding(8.dp),
+                .padding(8.dp)
+                .clickable { onItemClicked(song.id) },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(

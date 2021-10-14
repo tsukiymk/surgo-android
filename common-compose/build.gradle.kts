@@ -48,7 +48,7 @@ dependencies {
     implementation(libs.accompanist.insets)
 
     // Coil
-    implementation(libs.coil.compose)
+    implementation(libs.coilKt.compose)
 
     // Local unit tests
     testImplementation(libs.junit.jUnit)

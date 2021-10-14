@@ -23,15 +23,17 @@ fun Preference(
 ) {
     Column(modifier) {
         Row(
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
                 .height(64.dp)
                 .clickable { onClick() }
                 .padding(horizontal = 16.dp)
         ) {
             if (leading != null) {
                 Row(
-                    modifier = Modifier.fillMaxHeight()
-                        .width(68.dp),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(end = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     CompositionLocalProvider(
@@ -42,7 +44,8 @@ fun Preference(
             }
 
             Row(
-                modifier = Modifier.fillMaxHeight()
+                modifier = Modifier
+                    .fillMaxHeight()
                     .weight(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -165,7 +168,8 @@ fun <T> SelectListPreference(
                     values.forEach { (key, string) ->
                         item {
                             Row(
-                                Modifier.fillMaxWidth()
+                                Modifier
+                                    .fillMaxWidth()
                                     .height(48.dp)
                                     .clickable { onValueChange(key) }
                             ) {
@@ -179,7 +183,8 @@ fun <T> SelectListPreference(
                                     )
                                 }
                                 Row(
-                                    modifier = Modifier.fillMaxHeight()
+                                    modifier = Modifier
+                                        .fillMaxHeight()
                                         .padding(start = 16.dp)
                                         .weight(1f),
                                     verticalAlignment = Alignment.CenterVertically
